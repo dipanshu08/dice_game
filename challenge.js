@@ -9,7 +9,7 @@ GAME RULES:
 
 */
 
-var scores, roundScore, activePlayer, gamePlaying;
+var scores, roundScore, activePlayer, lastDice, gamePlaying;
 
 init();
 
@@ -25,7 +25,12 @@ document.querySelector('.btn-roll').addEventListener('click', function() {
         
 
         // 3. Update the round score IF the rolled number is NOT 1
-        if (dice !== 1) {
+        if (dice === 6 && lastDice === 6) {
+            // Player looses score
+            scores[activePlayer] = 0;
+            document.querySelector('#score-' + activePlayer).textContent = 0;
+            nextPlayer();
+        } else if (dice !== 1) {
             // Add score
             roundScore += dice;
             document.querySelector('#current-' + activePlayer).textContent = roundScore;
@@ -33,6 +38,8 @@ document.querySelector('.btn-roll').addEventListener('click', function() {
             // Next player
             nextPlayer();
         }
+
+        lastDice = dice;
     }
 });
 
@@ -43,8 +50,17 @@ document.querySelector('.btn-hold').addEventListener('click', function() {
         // Update the UI
         document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
 
+        var input = document.querySelector('.final-score').value;
+        var target;
+
+        if (input) {
+            target = input;
+        } else {
+            target = 10;
+        }
+
         // Check if player won the game
-        if (scores[activePlayer] >= 100) {
+        if (scores[activePlayer] >= target) {
             document.querySelector('#name-' + activePlayer).textContent = 'Winner!';
             document.querySelector('.dice').style.display = 'none';
             document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
